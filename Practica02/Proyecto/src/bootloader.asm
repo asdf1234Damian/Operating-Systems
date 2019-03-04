@@ -8,7 +8,7 @@ start:
 	cld
 ; Entra en modo TYY
   mov ah, 0Eh
-; Aqui y en la linea 24 se declara el mensaje
+  ;Se declara el mensaje y se guarda la direccion del mismo en SI
 	mov si, msg
 ; Comienza el ciclo, lodsb es para sacar uno por uno los caracteres de SI  a AL
 .loop	lodsb

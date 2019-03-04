@@ -14,7 +14,7 @@ start:
 ; Comienza el ciclo
 .loop
   mov al,[si]    ; se carga el byte del caracter
-  mov ah,0x0f    ; se carga el byte de la configuracion
+  mov ah,0x0f    ; se carga el byte de la configuracion, fondo negro
   mov [es:di],ax ; se carga el registro de al y ah (ax)a la direccion correspondiente
   inc si         ; siguiente caracter
   add di,2       ; se le suma 2 la direccion (1 por el caracter y otro por la configuracion)

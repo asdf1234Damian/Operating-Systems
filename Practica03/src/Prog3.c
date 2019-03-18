@@ -7,8 +7,6 @@ static void sig_hand(int _){
   (void)_;
   sigCatch = 0;
 }
-/**
-*/
 
 int main(int argc, char const *argv[]) {
 

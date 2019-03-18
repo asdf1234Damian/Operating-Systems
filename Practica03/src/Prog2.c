@@ -7,7 +7,7 @@ int main(int argc, char const *argv[]) {
   do {
     printf("Aqui estoy %d \n", getpid());
   } while(30!=difftime(time(NULL),startTime));
-  return 0;
+  printf("Terminacion normal\n");  return 0;
 }
 /**
 @file Prog2.c

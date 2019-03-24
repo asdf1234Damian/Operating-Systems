@@ -1,2 +1,3 @@
 NASM-Examples
 *.iso
+__pycache__/

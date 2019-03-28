@@ -1,0 +1,80 @@
+\hypertarget{classproc_1_1Process}{}\doxysection{proc.\+Process Class Reference}
+\label{classproc_1_1Process}\index{proc.Process@{proc.Process}}
+
+
+Esta clase se encarga de almacenar los datos de cada proceso; id, inicio y duracion, asi como de dar formato a travez del metodo \+\_\+\+\_\+\+\_\+str\+\_\+\+\_\+ para que se pueda usar en print()  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{classproc_1_1Process_a9ec93e98198d80c8545e43903de1352f}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classproc_1_1Process_a8fc5a213fdcccb479488d2ce218d2082}{start}}, \mbox{\hyperlink{classproc_1_1Process_a01eb4e55fd6e477a83ccf2a0d7f90b9f}{dur}})
+\begin{DoxyCompactList}\small\item\em Constructor de la clase, se encarga de generar el proceso con id unico tomado de la variable de clase \mbox{\hyperlink{classproc_1_1Process_a5a0009311536d8f56fdcc337f57db86d}{Process.\+id}}. \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{classproc_1_1Process_afcd031c5bcb9a11e12ac7de447c6b4d6}{\+\_\+\+\_\+str\+\_\+\+\_\+}} (self)
+\begin{DoxyCompactList}\small\item\em Representacion en cadena de un objeto. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classproc_1_1Process_a74a7e522a08b6be98832f03453472cfd}\label{classproc_1_1Process_a74a7e522a08b6be98832f03453472cfd}} 
+\mbox{\hyperlink{classproc_1_1Process_a74a7e522a08b6be98832f03453472cfd}{id}}
+\begin{DoxyCompactList}\small\item\em id del proceos \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classproc_1_1Process_a8fc5a213fdcccb479488d2ce218d2082}\label{classproc_1_1Process_a8fc5a213fdcccb479488d2ce218d2082}} 
+\mbox{\hyperlink{classproc_1_1Process_a8fc5a213fdcccb479488d2ce218d2082}{start}}
+\begin{DoxyCompactList}\small\item\em ciclo en el que llega el proceso al round robin \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classproc_1_1Process_a01eb4e55fd6e477a83ccf2a0d7f90b9f}\label{classproc_1_1Process_a01eb4e55fd6e477a83ccf2a0d7f90b9f}} 
+\mbox{\hyperlink{classproc_1_1Process_a01eb4e55fd6e477a83ccf2a0d7f90b9f}{dur}}
+\begin{DoxyCompactList}\small\item\em duracion del proceso en ciclos \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classproc_1_1Process_a5a0009311536d8f56fdcc337f57db86d}\label{classproc_1_1Process_a5a0009311536d8f56fdcc337f57db86d}} 
+int \mbox{\hyperlink{classproc_1_1Process_a5a0009311536d8f56fdcc337f57db86d}{id}} = 0
+\begin{DoxyCompactList}\small\item\em Variable estatica de la clase para asignar un id unico a cada proceso. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Esta clase se encarga de almacenar los datos de cada proceso; id, inicio y duracion, asi como de dar formato a travez del metodo \+\_\+\+\_\+\+\_\+str\+\_\+\+\_\+ para que se pueda usar en print() 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classproc_1_1Process_a9ec93e98198d80c8545e43903de1352f}\label{classproc_1_1Process_a9ec93e98198d80c8545e43903de1352f}} 
+\index{proc.Process@{proc.Process}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!proc.Process@{proc.Process}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def proc.\+Process.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{start,  }\item[{}]{dur }\end{DoxyParamCaption})}
+
+
+
+Constructor de la clase, se encarga de generar el proceso con id unico tomado de la variable de clase \mbox{\hyperlink{classproc_1_1Process_a5a0009311536d8f56fdcc337f57db86d}{Process.\+id}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em self} & el apuntador al objeto \\
+\hline
+{\em start} & el ciclo en el que el proceso comenzará \\
+\hline
+{\em dur} & la duracion del proceso antes de terminar. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classproc_1_1Process_afcd031c5bcb9a11e12ac7de447c6b4d6}\label{classproc_1_1Process_afcd031c5bcb9a11e12ac7de447c6b4d6}} 
+\index{proc.Process@{proc.Process}!\_\_str\_\_@{\_\_str\_\_}}
+\index{\_\_str\_\_@{\_\_str\_\_}!proc.Process@{proc.Process}}
+\doxysubsubsection{\texorpdfstring{\_\_str\_\_()}{\_\_str\_\_()}}
+{\footnotesize\ttfamily def proc.\+Process.\+\_\+\+\_\+str\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Representacion en cadena de un objeto. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em self} & el apuntador al objeto \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/proc.\+py\end{DoxyCompactItemize}

@@ -3,10 +3,12 @@ from circularQ import CircularQ as cq
 from queue import Queue as q
 from os import system
 import time
+## brief Programa driverpara la simulacion de round robin
+## Cola de procesos que no han entrado al round robin
 prcssQ = q()
+## Cola circular de round robin
 round = cq()
-# print(round)
-with open('input.txt','r') as file:
+with open('src/input.txt','r') as file:
     file = file.readlines()
     chunkSize = int(file[0])
     for line in file[1:]:
@@ -23,6 +25,9 @@ with open('input.txt','r') as file:
                 currP = 0
                 round.dequeue()
         system('clear')
+        while prcssQ.head != None and prcssQ.head.start == cycl:
+            p=prcssQ.dequeue()
+            round.queue(p)
         print(''.center(63,'-'))
         print('|'+'Procesos pendientes'.center(40)+'|'+('Ciclo: '+str(cycl)).center(20) + '|')
         print(''.center(63,'-'))
@@ -31,10 +36,7 @@ with open('input.txt','r') as file:
         print('|'+'Round Robin'.center(61)+'|')
         print(''.center(63,'-'))
         print(round)
-        while prcssQ.head != None and prcssQ.head.start == cycl:
-            p=prcssQ.dequeue()
-            round.queue(p)
-        time.sleep(2)
+        time.sleep(1)
         cycl+=1
         currP+=1
         if currP>chunkSize:

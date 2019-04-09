@@ -1,0 +1,134 @@
+\hypertarget{main_8c}{}\doxysection{src/main.c File Reference}
+\label{main_8c}\index{src/main.c@{src/main.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$sys/wait.\+h$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}{main}} (int argc, char const $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}\label{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}} 
+\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char const $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+Se crean los dos pipes y las variables auxiliares par leer y guardar la suma de los numeros pares e impares. Si alguno falla, termina el programa 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{int} buf ;}
+\DoxyCodeLine{\textcolor{keywordtype}{int} pipePar[2], sumpar=0, parC=0;}
+\DoxyCodeLine{\textcolor{keywordtype}{int} pipeImp[2], sumimp=0, impC=0;}
+\DoxyCodeLine{\textcolor{keywordflow}{if} (pipe(pipePar)==-\/1 || pipe(pipeImp)==-\/1) \{}
+\DoxyCodeLine{  printf(\textcolor{stringliteral}{"Error al crear los pipes \(\backslash\)n"});}
+\DoxyCodeLine{  \textcolor{keywordflow}{return} 1;}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+Se crea un arreglo de integers de tamano igual al primer parametro en argv\mbox{[}\mbox{]} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{char} *p;}
+\DoxyCodeLine{\textcolor{keywordtype}{int} n  = strtol(argv[1],\&p,10);}
+\DoxyCodeLine{\textcolor{keywordtype}{int} *nums = (\textcolor{keywordtype}{int}*)malloc(\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int})*n);}
+\DoxyCodeLine{srand(time(NULL));}
+\DoxyCodeLine{\textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} i = 0; i < n; i++) \{}
+\DoxyCodeLine{  nums[i]=rand()\%10;}
+\DoxyCodeLine{  \textcolor{keywordflow}{if} (nums[i]\%2) \{}
+\DoxyCodeLine{    impC++;}
+\DoxyCodeLine{  \}\textcolor{keywordflow}{else}\{}
+\DoxyCodeLine{    parC++;}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  printf(\textcolor{stringliteral}{"Padre (\%d): num alteatorio \%d: \%d\(\backslash\)n"},getpid(),i+1,nums[i]);}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+El padre hace 2 forks 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pid\_t cpid;}
+\DoxyCodeLine{cpid = fork();}
+\DoxyCodeLine{\textcolor{keywordflow}{if} (cpid<0) \{}
+\DoxyCodeLine{  \textcolor{keywordflow}{return} 1;}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{\textcolor{keywordflow}{if} (cpid) \{}
+\DoxyCodeLine{  cpid = fork();}
+\DoxyCodeLine{    \textcolor{keywordflow}{if} (cpid<0) \{}
+\DoxyCodeLine{      \textcolor{keywordflow}{return} 1;}
+\DoxyCodeLine{    \}}
+\end{DoxyCode}
+
+
+Despues el padre escribe los numeros en su pipe correspondiente 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordflow}{if} (cpid) \{}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < n; i++) \{}
+\DoxyCodeLine{    \textcolor{keywordflow}{if} (nums[i]\%2==0) \{}
+\DoxyCodeLine{      write(pipePar[1],\&nums[i], \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int}));}
+\DoxyCodeLine{    \}\textcolor{keywordflow}{else}\{}
+\DoxyCodeLine{      write(pipeImp[1],\&nums[i], \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int}));}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{  \}}
+\end{DoxyCode}
+
+
+Cierra los pipes y espera una respeusta 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{close(pipePar[1]);}
+\DoxyCodeLine{close(pipeImp[1]);}
+\DoxyCodeLine{wait(NULL);}
+\DoxyCodeLine{wait(NULL);}
+\end{DoxyCode}
+
+
+Se leen e imprimen la respuestas correspondientes de cada pipe , despues se cierran 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{read(pipePar[0],\&sumpar, \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int}));}
+\DoxyCodeLine{close(pipePar[0]);}
+\DoxyCodeLine{printf(\textcolor{stringliteral}{"Padre (\%d): Suma pares \%d \(\backslash\)n"},getpid() ,sumpar);}
+\DoxyCodeLine{read(pipeImp[0],\&sumimp, \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int}));}
+\DoxyCodeLine{close(pipeImp[0]);}
+\DoxyCodeLine{printf(\textcolor{stringliteral}{"Padre (\%d): Suma impares: \%d \(\backslash\)n"},getpid(), sumimp);}
+\end{DoxyCode}
+
+
+El segundo hijo (innermost) se dedica a sumar los numeros pares segun el contador, cierra el pipe despues. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\}\textcolor{keywordflow}{else}\{}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < parC; i++) \{}
+\DoxyCodeLine{    read(pipePar[0],\&buf, \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int}));}
+\DoxyCodeLine{    printf(\textcolor{stringliteral}{"Hijo de pares(\%d) : sumando \%d \(\backslash\)n"},getpid(),buf );}
+\DoxyCodeLine{    sumpar += buf;}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  close(pipePar[0]);}
+\end{DoxyCode}
+
+
+Escribe el resultado en el pipe, cierra el pipe y termina el proceso hijo con estado (E\+X\+I\+T\+\_\+\+S\+U\+C\+C\+E\+SS); para que el padre salga de wait(\+N\+U\+L\+L) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{  write(pipePar[1], \&sumpar, \textcolor{keyword}{sizeof}(sumpar));}
+\DoxyCodeLine{  close(pipePar[1]);}
+\DoxyCodeLine{  exit(EXIT\_SUCCESS);}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+El el primer hijo hace lo mismo, pero para sus numeros correspondientes (impares) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{  \}\textcolor{keywordflow}{else}\{}
+\DoxyCodeLine{    \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < impC; i++) \{}
+\DoxyCodeLine{      read(pipeImp[0],\&buf, \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int}));}
+\DoxyCodeLine{      printf(\textcolor{stringliteral}{"Hijo de impares(\%d) : sumando \%d \(\backslash\)n"},getpid(),buf );}
+\DoxyCodeLine{      sumimp += buf;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{    close(pipeImp[0]);}
+\DoxyCodeLine{    write(pipeImp[1], \&sumimp, \textcolor{keyword}{sizeof}(sumimp));}
+\DoxyCodeLine{    close(pipeImp[1]);}
+\DoxyCodeLine{    exit(EXIT\_SUCCESS);}
+\DoxyCodeLine{\}}
+\end{DoxyCode}

@@ -1,0 +1,266 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{minted}
+\usemintedstyle{borland}
+\usepackage{listings}
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Práctica 6: Threads}% Title 
+\author{Meza Madrid Damián}% Author
+\date{Mayo 2019}% Date
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\def\@seccntformat#1{%
+\expandafter\ifx\csname c@#1\endcsname\c@section\else
+\csname the#1\endcsname\quad
+\fi}
+\makeatother
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\theauthor}
+\lhead{\thetitle}
+\cfoot{\thepage}
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+	\centering
+    \vspace*{0.5 cm}
+    \includegraphics[scale = 0.30]{escom.png}\\[1.0 cm]	% University Logo
+	\textsc{\Large Instituto Politécnico Nacional}\\[0.5 cm]% Course Code
+	\textsc{\Large Escuela Superior de Computo}\\[0.5 cm]% Course Code
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	Reporte\\
+	Profesor: Ulises Velez Saldaña \\
+	Alumno: Meza Madrid Raúl Damián\\
+    Clase: Sistemas operativos\\
+    Grupo: 2CM7\\
+\end{titlepage}
+\tableofcontents
+\pagebreak
+\section{Introducción}
+\subsection{Threads}
+En los sistemas operativos tradicionales, cada proceso tiene un espacio de direcciones y un solo hilo de control. De hecho, ésa es casi la definición de un proceso. Sin embargo con frecuencia hay situaciones en las que es conveniente tener varios hilos de control en el mismo espacio de direcciones que se ejecuta en cuasi-paralelo, como si fueran procesos (casi) separados (excepto por el espacio de direcciones compartido). 
+\\
+LA principal razón para tener hilos es que en muchas aplicaciones se desarrollan varias actividades a la vez. Algunas de esas se pueden bloquear de vez en cuando. Al descomponer una aplicación en varios hilos secuenciales se ejecutan casi en paralelo, el modelo de programación se simplifica. A comparación de los procesos, con hilos se tiene la capacidad de compartir un espacio de direcciones y todos sus datos entre ellas. Esta habilidad es esencial para ciertas aplicaciones, razón por la cual no funcionara el tener diferentes procesos.
+\\ 
+Otra razón para tener hilos es que son mas ligeros que los procesos; más fáciles de crear y de destruir. En muchos sistemas, la creación de un hilo es de 10 a 100 veces mas rápida. 
+\subsection{Programas y herramientas utilizados}
+Esta práctica fue desarrollada en el sistema operativo Ubuntu 18.04.1 LTS. Estos son los programas y herramientas utilizados, junto con el comando de instalación, en caso de que no estuvieran instalados ya. 
+\begin{itemize}
+    \item Doxygen 
+    \begin{minted}{bash}
+        git clone https://github.com/doxygen/doxygen.git
+        cd doxygen
+        mkdir build
+        cd build
+        cmake -G "Unix Makefiles" ..
+        make
+        make install
+    \end{minted}
+    \item make
+    \item cmake
+    \item C
+\end{itemize}
+\section{Objetivo}
+Que el alumno aplique la teoría vista en clase implementando la creación de varios hilos cada uno encargado de sumar un determinado renglón dentro de una suma de matrices.
+\section{Desarrollo}
+El primer paso es leer los datos desde la entrada estándar; STDIN. El programa puede correr de esta manera, pero el archivo make utiliza el archivo ./src/input.txt como entrada para las matrices donde las primer linea denota las dimensiones \emph{n m} de la matriz, las siguientes \emph{m} lineas denotan los renglones con n números, separados por espacios, de la matriz A; los \emph{m} siguientes renglones corresponden de la misma manera a la matriz B. 
+\subsection{Codigo}
+El codigo fuente contiene comentarios que describen el programa. Son utilizados tambien para documentar con doxygen.
+\subsubsection{Código fuente}
+\begin{minted}[breaklines,mathescape, linenos, numbersep=5pt, frame=single, numbersep=5pt, xleftmargin=0pt]{c}
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+int n=0,m=0;
+int *matrixA,*matrixB, *indexes;
+pthread_t *threads;
+
+/// Funcion para no tener que hacer un arreglo bidimensional
+/// \code
+int myIndex(int i,int j){
+  return i + j*m;
+}
+/// \endcode
+
+
+/// Funcion para agregar todos los elementos dentro de la misma fila del arrelgo  dado el indice de la misma
+/// \code
+void *addRow(void *arg){
+  int j = *(int*)arg;
+  for (size_t i = 0; i < n; i++) {
+    matrixA[myIndex(i,j)]+=matrixB[myIndex(i,j)];
+  }
+  pthread_exit(NULL);
+}
+/// \endcode
+
+int main(int argc, char const *argv[]) {
+  system("clear");
+  /// Se leen los tamaños de las matrices, y se le asigna la memoria correspondiente junto al arreglo de threads
+  /// \code
+  scanf("%d %d",&n,&m);
+  matrixA = (int*)malloc(sizeof(int)*(n+1)*(m+1));
+  matrixB = (int*)malloc(sizeof(int)*(n+1)*(m+1));
+  threads = (pthread_t*)malloc(sizeof(pthread_t)*(m+1));
+  indexes = (int*)malloc(sizeof(int)*(m+1));
+  /// \endcode
+
+  /// Se lee la matriz A
+  /// \code
+  for (size_t j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+      scanf("%d", &matrixA[myIndex(i, j)]);
+    }
+  }
+  printf("\nMatriz A: \n");
+  for (size_t j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+      printf("%d ", matrixA[myIndex(i, j)]);
+    }
+    printf("\n");
+  }
+
+  /// \code
+
+  /// Se lee la matriz A
+  /// \code
+  printf("\nMatriz B: \n");
+  for (size_t j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+      scanf("%d", &matrixB[myIndex(i, j)]);
+    }
+  }
+  for (size_t j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+      printf("%d ", matrixB[myIndex(i, j)]);
+    }
+    printf("\n");
+  }
+
+  /// \code
+
+  /// Se crean los hilos y los datos correspondientes para cada uno de ellos
+  /// \code
+  for (int j = 0; j < m; j++) {
+    indexes[j] = j;
+    pthread_create(&threads[j], NULL, addRow, (void *)&indexes[j]);
+  }
+  /// \endcode
+
+  /// Se imprime la matriz
+  /// \code
+  for (int j = 0; j < m; j++) {
+    pthread_join(threads[j], NULL);
+  }
+  printf("\nMatriz resultante: \n");
+  for (size_t j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+      printf("%d ", matrixA[myIndex(i, j)]);
+    }
+    printf("\n");
+  }
+  /// \code
+}
+\end{minted}
+\section{Resultados}
+El programa funciona de manera adecuada. A continuacion se muestran dos test case para ilustrar la salida del programa.
+\subsection{Caso de prueba: A}
+\subsubsection{Entrada (input.txt)}
+\begin{minted}[breaklines,mathescape, numbersep=5pt,linenos, frame=single, numbersep=5pt, xleftmargin=0pt,]{vim}
+3 4 
+3 4 5
+2 3 5
+10 2 11
+10 2 11
+7 6 5
+8 7 5
+0 8 -1
+10 2 11
+\end{minted}
+\subsubsection{Salida (terminal)}
+\begin{minted}[breaklines,mathescape, numbersep=5pt,linenos, frame=single, numbersep=5pt, xleftmargin=0pt,]{vim}
+Matriz A: 
+3 4 5 
+2 3 5 
+10 2 11 
+10 2 11 
+
+Matriz B: 
+7 6 5 
+8 7 5 
+0 8 -1 
+10 2 11 
+
+Matriz resultante: 
+10 10 10 
+10 10 10 
+10 10 10 
+20 4 22 
+\end{minted}
+
+\subsection{Caso de prueba: B}
+\subsubsection{Entrada (input.txt)}
+\begin{minted}[breaklines,mathescape, numbersep=5pt,linenos, frame=single, numbersep=5pt, xleftmargin=0pt,]{vim}
+3 5
+0 1 2
+1 2 3
+2 3 4
+3 4 5
+4 5 6
+0 -1 -2
+-1 -2 -3
+-2 -3 -4
+-3 -4 -5
+-4 -5 -6
+\end{minted}
+\subsubsection{Salida (terminal)}
+\begin{minted}[breaklines,mathescape, numbersep=5pt,linenos, frame=single, numbersep=5pt, xleftmargin=0pt,]{vim}
+Matriz A: 
+0 1 2 
+1 2 3 
+2 3 4 
+3 4 5 
+4 5 6 
+
+Matriz B: 
+0 -1 -2 
+-1 -2 -3 
+-2 -3 -4 
+-3 -4 -5 
+-4 -5 -6 
+
+Matriz resultante: 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+\end{minted}
+\section{Errores y problemas}
+Fue necesario crear un arreglo para que los hilos pudieran acceder a sus argumentos sin que estos cambien durante la ejecución.  
+
+\section{Codigo (Github)}
+Todo el codigo de esta practica se puede encontrar en :\url{https://github.com/asdf1234Damian/Operating-Systems/tree/master/Practica06}
+\nocite{*}
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{plain} 
+\bibliography{biblist}
+\end{document}
+

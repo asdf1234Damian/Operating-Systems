@@ -1,0 +1,141 @@
+\hypertarget{main_8c}{}\doxysection{src/main.c File Reference}
+\label{main_8c}\index{src/main.c@{src/main.c}}
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}{main}} (int argc, char const $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}} =0
+\item 
+int \mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}} =0
+\item 
+int $\ast$ \mbox{\hyperlink{main_8c_a3739ec802d413beea0bf15f07e5e24fa}{matrixA}}
+\item 
+int $\ast$ \mbox{\hyperlink{main_8c_a9546d204e64238c43a495de4d95ce095}{matrixB}}
+\item 
+int $\ast$ \mbox{\hyperlink{main_8c_aadee3c9401189d57c4aa5f46691ed8a7}{indexes}}
+\item 
+pthread\+\_\+t $\ast$ \mbox{\hyperlink{main_8c_ae3e85628d413435fbcfb27a271a41d79}{threads}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}\label{main_8c_abf9e6b7e6f15df4b525a2e7705ba3089}} 
+\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char const $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+Funcion para no tener que hacer un arreglo bidimensional 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{int} myIndex(\textcolor{keywordtype}{int} i,\textcolor{keywordtype}{int} j)\{}
+\DoxyCodeLine{  \textcolor{keywordflow}{return} i + j*\mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}};}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+ Funcion para agregar todos los elementos dentro de la misma fila del arrelgo dado el indice de la misma 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{void} *addRow(\textcolor{keywordtype}{void} *arg)\{}
+\DoxyCodeLine{  \textcolor{keywordtype}{int} j = *(\textcolor{keywordtype}{int}*)arg;}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}; i++) \{}
+\DoxyCodeLine{    \mbox{\hyperlink{main_8c_a3739ec802d413beea0bf15f07e5e24fa}{matrixA}}[myIndex(i,j)]+=\mbox{\hyperlink{main_8c_a9546d204e64238c43a495de4d95ce095}{matrixB}}[myIndex(i,j)];}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  pthread\_exit(NULL);}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+ Se leen los tamaños de las matrices, y se le asigna la memoria correspondiente junto al arreglo de threads 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{scanf(\textcolor{stringliteral}{"\%d \%d"},\&\mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}},\&\mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}});}
+\DoxyCodeLine{\mbox{\hyperlink{main_8c_a3739ec802d413beea0bf15f07e5e24fa}{matrixA}} = (\textcolor{keywordtype}{int}*)malloc(\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int})*(\mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}+1)*(\mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}+1));}
+\DoxyCodeLine{\mbox{\hyperlink{main_8c_a9546d204e64238c43a495de4d95ce095}{matrixB}} = (\textcolor{keywordtype}{int}*)malloc(\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int})*(\mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}+1)*(\mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}+1));}
+\DoxyCodeLine{\mbox{\hyperlink{main_8c_ae3e85628d413435fbcfb27a271a41d79}{threads}} = (pthread\_t*)malloc(\textcolor{keyword}{sizeof}(pthread\_t)*(\mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}+1));}
+\DoxyCodeLine{\mbox{\hyperlink{main_8c_aadee3c9401189d57c4aa5f46691ed8a7}{indexes}} = (\textcolor{keywordtype}{int}*)malloc(\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{int})*(\mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}+1));}
+\end{DoxyCode}
+
+
+Se lee la matriz A 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j = 0; j < \mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}; j++) \{}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}; i++) \{}
+\DoxyCodeLine{    scanf(\textcolor{stringliteral}{"\%d"}, \&\mbox{\hyperlink{main_8c_a3739ec802d413beea0bf15f07e5e24fa}{matrixA}}[myIndex(i, j)]);}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{printf(\textcolor{stringliteral}{"\(\backslash\)nMatriz A: \(\backslash\)n"});}
+\DoxyCodeLine{\textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j = 0; j < \mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}; j++) \{}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}; i++) \{}
+\DoxyCodeLine{    printf(\textcolor{stringliteral}{"\%d "}, \mbox{\hyperlink{main_8c_a3739ec802d413beea0bf15f07e5e24fa}{matrixA}}[myIndex(i, j)]);}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  printf(\textcolor{stringliteral}{"\(\backslash\)n"});}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \(\backslash\)code}
+\DoxyCodeLine{}
+\DoxyCodeLine{    Se lee la matriz A}
+\DoxyCodeLine{    \(\backslash\)code}
+\DoxyCodeLine{printf(\textcolor{stringliteral}{"\(\backslash\)nMatriz B: \(\backslash\)n"});}
+\DoxyCodeLine{\textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j = 0; j < \mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}; j++) \{}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}; i++) \{}
+\DoxyCodeLine{    scanf(\textcolor{stringliteral}{"\%d"}, \&\mbox{\hyperlink{main_8c_a9546d204e64238c43a495de4d95ce095}{matrixB}}[myIndex(i, j)]);}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{\textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} j = 0; j < \mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}; j++) \{}
+\DoxyCodeLine{  \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < \mbox{\hyperlink{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}{n}}; i++) \{}
+\DoxyCodeLine{    printf(\textcolor{stringliteral}{"\%d "}, \mbox{\hyperlink{main_8c_a9546d204e64238c43a495de4d95ce095}{matrixB}}[myIndex(i, j)]);}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  printf(\textcolor{stringliteral}{"\(\backslash\)n"});}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \(\backslash\)code}
+\DoxyCodeLine{}
+\DoxyCodeLine{    Se crean los hilos y los datos correspondientes para cada uno de ellos}
+\DoxyCodeLine{    \(\backslash\)code}
+\DoxyCodeLine{\textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < \mbox{\hyperlink{main_8c_a742204794ea328ba293fe59cec79b990}{m}}; j++) \{}
+\DoxyCodeLine{  \mbox{\hyperlink{main_8c_aadee3c9401189d57c4aa5f46691ed8a7}{indexes}}[j] = j;}
+\DoxyCodeLine{  pthread\_create(\&\mbox{\hyperlink{main_8c_ae3e85628d413435fbcfb27a271a41d79}{threads}}[j], NULL, addRow, (\textcolor{keywordtype}{void} *)\&\mbox{\hyperlink{main_8c_aadee3c9401189d57c4aa5f46691ed8a7}{indexes}}[j]);}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{main_8c_aadee3c9401189d57c4aa5f46691ed8a7}\label{main_8c_aadee3c9401189d57c4aa5f46691ed8a7}} 
+\index{main.c@{main.c}!indexes@{indexes}}
+\index{indexes@{indexes}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{indexes}{indexes}}
+{\footnotesize\ttfamily int $\ast$ indexes}
+
+\mbox{\Hypertarget{main_8c_a742204794ea328ba293fe59cec79b990}\label{main_8c_a742204794ea328ba293fe59cec79b990}} 
+\index{main.c@{main.c}!m@{m}}
+\index{m@{m}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{m}{m}}
+{\footnotesize\ttfamily int m =0}
+
+\mbox{\Hypertarget{main_8c_a3739ec802d413beea0bf15f07e5e24fa}\label{main_8c_a3739ec802d413beea0bf15f07e5e24fa}} 
+\index{main.c@{main.c}!matrixA@{matrixA}}
+\index{matrixA@{matrixA}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{matrixA}{matrixA}}
+{\footnotesize\ttfamily int$\ast$ matrixA}
+
+\mbox{\Hypertarget{main_8c_a9546d204e64238c43a495de4d95ce095}\label{main_8c_a9546d204e64238c43a495de4d95ce095}} 
+\index{main.c@{main.c}!matrixB@{matrixB}}
+\index{matrixB@{matrixB}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{matrixB}{matrixB}}
+{\footnotesize\ttfamily int $\ast$ matrixB}
+
+\mbox{\Hypertarget{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}\label{main_8c_a76f11d9a0a47b94f72c2d0e77fb32240}} 
+\index{main.c@{main.c}!n@{n}}
+\index{n@{n}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{n}{n}}
+{\footnotesize\ttfamily int n =0}
+
+\mbox{\Hypertarget{main_8c_ae3e85628d413435fbcfb27a271a41d79}\label{main_8c_ae3e85628d413435fbcfb27a271a41d79}} 
+\index{main.c@{main.c}!threads@{threads}}
+\index{threads@{threads}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{threads}{threads}}
+{\footnotesize\ttfamily pthread\+\_\+t$\ast$ threads}
+
